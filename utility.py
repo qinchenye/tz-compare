@@ -27,11 +27,11 @@ def write_GS(fname,A,ep,tpd,Egs):
     f = open('./data_GS/'+fname,'a',1) 
     f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(A,ep,tpd,Egs))
     
-def write_GS2(fname,A,ep,pds,pdp,Egs):
+def write_GS2(fname,A,epNi,epCu,pds,pdp,Egs):
     #"a" - Append - will append to the end of the file
     #"w" - Write - will overwrite any existing content
     f = open('./data_GS/'+fname,'a',1) 
-    f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(A,ep,pds,pdp,Egs))
+    f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'.format(A,epNi,epCu,pds,pdp,Egs))
     
 def write_GS_components(fname,A,ep,tpd,wgt_d8, wgt_d9L, wgt_d10L2):
     #"a" - Append - will append to the end of the file
@@ -41,12 +41,12 @@ def write_GS_components(fname,A,ep,tpd,wgt_d8, wgt_d9L, wgt_d10L2):
             .format(A,ep,tpd, wgt_d8[0],wgt_d8[1],wgt_d8[2],wgt_d8[3],wgt_d8[4],wgt_d8[5],\
              wgt_d9L[0],wgt_d9L[1],wgt_d9L[2],wgt_d9L[3],wgt_d10L2[0]))
 
-def write_GS_components2(fname,A,ep,pds,pdp,wgt_d8, wgt_d9L, wgt_d10L2):
+def write_GS_components2(fname,A,epNi,epCu,pds,pdp,wgt_d8, wgt_d9L, wgt_d10L2):
     #"a" - Append - will append to the end of the file
     #"w" - Write - will overwrite any existing content
     f = open('./data_GS/'+fname,'a',1) 
-    f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'
-            .format(A,ep,pds,pdp, wgt_d8[0],wgt_d8[1],wgt_d8[2],wgt_d8[3],wgt_d8[4],wgt_d8[5],\
+    f.write('{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n'
+            .format(A,epNi,epCu,pds,pdp, wgt_d8[0],wgt_d8[1],wgt_d8[2],wgt_d8[3],wgt_d8[4],wgt_d8[5],\
              wgt_d9L[0],wgt_d9L[1],wgt_d9L[2],wgt_d9L[3],wgt_d10L2[0]))
     
 def write_lowpeak(fname,A,ep,tpd,w_peak,weight):
@@ -67,20 +67,25 @@ def get_statistic_2orb(o1,o2):
     Get how many orbs are on Ni, O separately
     and write info into dorbs and porbs
     '''  
-    nNi = 0; nO = 0; dorbs=[]; porbs=[]
+    nNi = 0; nO = 0;nCu = 0; dorbs=[]; porbs=[]
     if o1 in pam.Ni_orbs:
         nNi += 1; dorbs.append(o1)
+    elif o1 in pam.Cu_orbs:
+        nCu += 1; dorbs.append(o1)    
     elif o1 in pam.O_orbs:
         nO += 1; porbs.append(o1)
     if o2 in pam.Ni_orbs:
         nNi += 1; dorbs.append(o2)
+    elif o2 in pam.Cu_orbs:
+        nCu += 1; dorbs.append(o2)  
     elif o2 in pam.O_orbs:
         nO += 1; porbs.append(o2)
         
-    assert(nNi==len(dorbs))
+
     assert(nO ==len(porbs))
+    assert((nNi+nCu) ==len(dorbs))
     
-    return nNi, nO, dorbs, porbs
+    return nNi, nO, nCu, dorbs, porbs
 
 def get_statistic_3orb(o1,o2,o3):
     '''
@@ -192,20 +197,20 @@ def compare_matrices(m1,m2):
                     break
         return out
     
-def get_atomic_d8_energy(A,B,C):
-    '''
-    Atomic limite d8 energy
-    '''
-    E_1S = A+14*B+7*C
-    E_1G = A+4*B+2*C
-    E_1D = A-3*B+2*C
-    E_3P = A+7*B
-    E_3F = A-8*B
-    print ("E_1S = ", E_1S)     
-    print ("E_1G = ", E_1G)     
-    print ("E_1D = ", E_1D) 
-    print ("E_3P = ", E_3P)
-    print ("E_3F = ", E_3F)
+# def get_atomic_d8_energy(ANi,B,C):
+#     '''
+#     Atomic limite d8 energy
+#     '''
+#     E_1S = ANi+14*B+7*C
+#     E_1G = ANi+4*B+2*C                                               #gai
+#     E_1D = ANi-3*B+2*C
+#     E_3P = ANi+7*B
+#     E_3F = ANi-8*B
+#     print ("E_1S = ", E_1S)     
+#     print ("E_1G = ", E_1G)     
+#     print ("E_1D = ", E_1D) 
+#     print ("E_3P = ", E_3P)
+#     print ("E_3F = ", E_3F)
     
 def plot_atomic_multiplet_peaks(data_for_maxval):
     maxval = max(data_for_maxval)

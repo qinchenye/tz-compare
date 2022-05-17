@@ -93,14 +93,19 @@ def make_state_canonical(state):
         
     # note that z1 can differ from z2 in the presence of apical pz orbital
     elif (x1,y1)==(x2,y2):           
-        if s1==s2:
+        if s1==s2 and z1==z2:
             o12 = list(sorted([orb1,orb2]))
             if o12[0]==orb2:
                 canonical_state = create_state(s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1)
                 phase = -1.0  
-        elif s1=='dn' and s2=='up':
+        elif s1=='dn' and s2=='up' and z1==z2:
             canonical_state = create_state('up',orb2,x2,y2,z2,'dn',orb1,x1,y1,z1)
             phase = -1.0
+        elif z1==0 and z2==1:
+            canonical_state = create_state(s2,orb2,x2,y2,z2,s1,orb1,x1,y1,z1)
+            phase = -1.0  
+            
+            
 
     return canonical_state, phase
     
@@ -161,10 +166,10 @@ class VariationalSpace:
         self.lookup_tbl = self.create_lookup_tbl()
         self.dim = len(self.lookup_tbl)
         print ("VS.dim = ", self.dim)
-        #self.print_VS()
+#         self.print_VS()
 
     def print_VS(self):
-        for i in xrange(0,self.dim):
+        for i in range(0,self.dim):
             state = self.get_state(self.lookup_tbl[i])
             ts1 = state['hole1_spin']
             ts2 = state['hole2_spin']
@@ -174,7 +179,7 @@ class VariationalSpace:
             tx2, ty2, tz2 = state['hole2_coord']
             #if ts1=='up' and ts2=='up':
             #if torb1=='dx2y2' and torb2=='px':
-            print (i, ts1,torb1,tx1,ty1,ts2,torb2,tx2,ty2)
+            print (i, ts1,torb1,tx1,ty1,tz1,ts2,torb2,tx2,ty2,tz2)
                 
     def create_lookup_tbl(self):
         '''
@@ -194,7 +199,7 @@ class VariationalSpace:
         for ux in range(-Mc,Mc+1):
             Bu = Mc - abs(ux)
             for uy in range(-Bu,Bu+1):
-                for uz in [0]:
+                for uz in [0,1]:
                     orb1s = lat.get_unit_cell_rep(ux,uy,uz)
                     if orb1s==['NotOnSublattice']:
                         continue
@@ -202,7 +207,7 @@ class VariationalSpace:
                     for vx in range(-Mc,Mc+1):
                         Bv = Mc - abs(vx)
                         for vy in range(-Bv,Bv+1):
-                            for vz in [0]:
+                            for vz in [0,1]:
                                 orb2s = lat.get_unit_cell_rep(vx,vy,vz)
                                 if orb2s==['NotOnSublattice']:
                                     continue

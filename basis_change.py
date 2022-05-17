@@ -308,7 +308,7 @@ def create_singlet_triplet_basis_change_matrix_d_double(VS,d_double):
 
 def print_VS_after_basis_change(VS,S_val,Sz_val):
     print ('print_VS_after_basis_change:')
-    for i in xrange(0,VS.dim):
+    for i in range(0,VS.dim):
         state = VS.get_state(VS.lookup_tbl[i])
         ts1 = state['hole1_spin']
         ts2 = state['hole2_spin']

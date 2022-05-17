@@ -111,10 +111,12 @@ def get_unit_cell_rep(x,y,z):
     '''
     # Note that x, y, z can be negative
     if x==0 and y==0 and z==0:
+        return pam.Cu_orbs
+    elif x==0 and y==0 and z==1:
         return pam.Ni_orbs
-    elif abs(x) % 2 == 1 and abs(y) % 2 == 0 and z==0:
+    elif abs(x) % 2 == 1 and abs(y) % 2 == 0:
         return pam.O1_orbs
-    elif abs(x) % 2 == 0 and abs(y) % 2 == 1 and z==0:
+    elif abs(x) % 2 == 0 and abs(y) % 2 == 1:
         return pam.O2_orbs
     else:
         return ['NotOnSublattice']

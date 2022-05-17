@@ -6,24 +6,32 @@ Mc = 8
 
 # Note that Ni-d and O-p orbitals use hole language
 # while Nd orbs use electron language
-ed = {'d3z2r2': 0.0,\
+# ed = {'d3z2r2': 0.0,\
+#       'dx2y2' : 0.0,\
+#       'dxy'   : 0.0,\
+#       'dxz'   : 0.0,\
+#       'dyz'   : 0.0}
+# ed = {'d3z2r2': 1.2,\
+#       'dx2y2' : 0.0,\
+#       'dxy'   : 0.3,\
+#       'dxz'   : 0.7,\
+#       'dyz'   : 0.7}
+edCu = {'d3z2r2': 200.0,\
+      'dx2y2' : 200.0,\
+      'dxy'   : 200.0,\
+      'dxz'   : 200.0,\
+      'dyz'   : 200.0}
+edNi = {'d3z2r2': 0.0,\
       'dx2y2' : 0.0,\
       'dxy'   : 0.0,\
       'dxz'   : 0.0,\
       'dyz'   : 0.0}
-ed = {'d3z2r2': 1.2,\
-      'dx2y2' : 0.0,\
-      'dxy'   : 0.3,\
-      'dxz'   : 0.7,\
-      'dyz'   : 0.7}
-ed = {'d3z2r2': 0.0,\
-      'dx2y2' : 0.0,\
-      'dxy'   : 0.0,\
-      'dxz'   : 0.0,\
-      'dyz'   : 0.0}
-eps = np.arange(0.0, 12.01, 1.0)
 
-As = np.arange(0.0, 0.01, 2.0)
+epCus = np.arange(400.0, 400.01, 1.0)
+epNis = np.arange(0.0, 12.01, 1.0)
+
+ANis = np.arange(0.0, 0.01, 1.0)
+ACus = np.arange(400.0, 400.01, 1.0)
 B = 0.00
 C = 0.00
 #As = np.arange(100, 100.1, 1.0)
@@ -39,7 +47,7 @@ C = 0.00
 #            hopping signs are considered in dispersion separately
 Norb = 7
 if Norb==7:
-    #tpds = [0.00001]  # for check_CuO4_eigenvalues.py
+#     tpds = [0.00001]  # for check_CuO4_eigenvalues.py
     tpds = np.linspace(1.5, 1.5, num=1, endpoint=True) #[0.25]
     #tpds = [0.01]
     tpps = [0.55]
@@ -51,16 +59,19 @@ elif Norb==9 or Norb==11:
     vals = np.linspace(1.3, 1.3, num=1, endpoint=True)
     pdss = np.asarray(vals)*2./np.sqrt(3)
     pdps = np.asarray(pdss)*np.sqrt(3)/4.
-    #pdss = [0.01]
-    #pdps = [0.01]
+#     pdss = [0.001]
+#     pdps = [0.001]
     #------------------------------------------------------------------------------
     # note that tpp ~ (pps+ppp)/2
     # because 3 or 7 orbital bandwidth is 8*tpp while 9 orbital has 4*(pps+ppp)
     pps = 0.9
     ppp = 0.2
+         
     #pps = 0.00001
     #ppp = 0.00001
 
+tzs =np.arange(0, 0.1, 0.2)       #gai
+                                               
 wmin = -8; wmax = 20
 eta = 0.1
 Lanczos_maxiter = 600
@@ -72,7 +83,7 @@ VS_only_up_up = 0
 if_H0_rotate_byU = 1
 basis_change_type = 'd_double' # 'all_states' or 'd_double'
 if_print_VS_after_basis_change = 0
-
+# 
 if_find_lowpeak = 0
 if if_find_lowpeak==1:
     peak_mode = 'lowest_peak' # 'lowest_peak' or 'highest_peak' or 'lowest_peak_intensity'
@@ -86,6 +97,8 @@ if if_get_ground_state==1:
     Neval = 10
 if_compute_Aw_dd_total = 0
 
+Cu_orbs = ['dx2y2','dxy','dxz','dyz','d3z2r2']
+                                                                                                 #修
 Ni_orbs = ['dx2y2','dxy','dxz','dyz','d3z2r2']
 #Ni_orbs = ['dx2y2','d3z2r2']
     
@@ -101,9 +114,11 @@ elif Norb==11:
 O_orbs = O1_orbs + O2_orbs
 # sort the list to facilliate the setup of interaction matrix elements
 Ni_orbs.sort()
+Cu_orbs.sort()
 O1_orbs.sort()
 O2_orbs.sort()
 O_orbs.sort()
+print ("Cu_orbs = ", Cu_orbs)
 print ("Ni_orbs = ", Ni_orbs)
 print ("O1_orbs = ",  O1_orbs)
 print ("O2_orbs = ",  O2_orbs)

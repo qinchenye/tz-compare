@@ -204,6 +204,36 @@ def set_tpd_tpp(Norb,tpd,tpp,pds,pdp,pps,ppp):
                           ('DR','pz1','pz2'):  ppp}
         
     return tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac, tpp_nn_hop_fac
+
+
+def set_tz(Norb,tz):                            #条件Ni向下
+    if pam.Norb==7:
+        tz_fac ={('px','px'):  tz,\
+                 ('py','py'):  tz,\
+                 ('d3z2r2','d3z2r2'):  1.2*tz,\
+                 ('dx2y2', 'dx2y2'):  tz,\
+                 ('dxy',   'dxy'):  tz}
+    if pam.Norb==9:
+        tz_fac ={('px1','px1'):  tz,\
+                 ('px2','px2'):  tz,\
+                 ('py1','py1'):  tz,\
+                 ('py2','py2'):  tz,\
+                 ('d3z2r2','d3z2r2'):  1.2*tz,\
+                 ('dx2y2', 'dx2y2'):  tz,\
+                 ('dxy',   'dxy'):  tz}
+    if pam.Norb==11:
+        tz_fac ={('px1','px1'):  tz,\
+                 ('px2','px2'):  tz,\
+                 ('py1','py1'):  tz,\
+                 ('py2','py2'):  tz,\
+                 ('pz1','pz1'): -1.2*tz,\
+                 ('pz2','pz2'): -1.2*tz,\
+                 ('d3z2r2','d3z2r2'):  1.2*tz,\
+                 ('dx2y2', 'dx2y2'):  tz,\
+                 ('dxy',   'dxy'):  tz}
+        
+    return tz_fac
+    
         
 def get_interaction_mat(A, sym):
     '''
@@ -346,6 +376,7 @@ def get_interaction_mat(A, sym):
         
     return state_order, interaction_mat, Stot, Sz_set, AorB_sym
 
+
 def set_matrix_element(row,col,data,new_state,col_index,VS,element):
     '''
     Helper function that is used to set elements of a matrix using the
@@ -422,6 +453,9 @@ def create_tpd_nn_matrix(VS, tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac):
 
                 if not vs.check_in_vs_condition(x1+vx,y1+vy,x2,y2):
                     continue
+                    
+                if z1!=z2:                                                                                   #xin
+                    continue 
 
                 # consider t_pd for all cases; when up hole hops, dn hole should not change orb
                 for o1 in orbs1:
@@ -448,6 +482,9 @@ def create_tpd_nn_matrix(VS, tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac):
                     continue
 
                 if not vs.check_in_vs_condition(x1,y1,x2+vx,y2+vy):
+                    continue
+                     
+                if z1!=z2:                                                                                   #xin
                     continue
 
                 for o2 in orbs2:
@@ -569,8 +606,87 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
 
     return out
 
+def create_tz_matrix(VS,tz_fac):
+    '''
+    只考虑直上直下
+    假设层间跃迁不取决于轨道
+    '''    
+    print ("start create_tz_matrix")
+    print ("==========================")
+    
+    dim = VS.dim
+    data = []
+    row = []
+    col = []
+    tz_orbs = tz_fac.keys()
+    
+    for i in range(0,dim):
+        start_state = VS.get_state(VS.lookup_tbl[i])
+        
+        # double check which cost some time, might not necessary
+        assert VS.get_uid(start_state) == VS.lookup_tbl[i]
+        
+        s1 = start_state['hole1_spin']
+        s2 = start_state['hole2_spin']
+        orb1 = start_state['hole1_orb']
+        orb2 = start_state['hole2_orb']
+        x1, y1, z1 = start_state['hole1_coord']
+        x2, y2, z2 = start_state['hole2_coord']
 
-def create_edep_diag_matrix(VS,A,ep):
+        # hole 1 hops: some d-orbitals might have no tpd
+        orbs1 = lat.get_unit_cell_rep(x1, y1, 1-z1)
+        if orbs1 == ['NotOnSublattice']:
+            continue
+
+        # consider t_pd for all cases; when up hole hops, dn hole should not change orb
+        for o1 in orbs1:
+            if o1!=orb1:
+                continue
+            
+            # consider Pauli principle
+            if s1==s2 and o1==orb2 and (x1,y1,1-z1)==(x2,y2,z2):
+                continue
+
+            o12 = [o1,orb1]
+            o12 = tuple(o12)
+            if o12 in tz_orbs:
+                tmp_state = vs.create_state(s1,o1,x1,y1,1-z1,s2,orb2,x2,y2,z2)
+                new_state,ph = vs.make_state_canonical(tmp_state)
+                set_matrix_element(row,col,data,new_state,i,VS,tz_fac[o12]*ph)
+
+        # hole 2 hops; some d-orbitals might have no tpd
+        orbs2 = lat.get_unit_cell_rep(x2, y2, 1-z2)
+        if orbs2 == ['NotOnSublattice']:
+            continue
+
+        # consider t_pd for all cases; when up hole hops, dn hole should not change orb
+        for o2 in orbs2:
+            if o2!=orb2:
+                continue
+                
+            # consider Pauli principle
+            if s1==s2 and orb1==o2 and (x1,y1,z1)==(x2,y2,1-z2):
+                continue
+                
+            o12 = [o2,orb2]
+            o12 = tuple(o12)
+            if o12 in tz_orbs:
+                tmp_state = vs.create_state(s1,orb1,x1,y1,z1,s2,o2,x2,y2,1-z2)
+                new_state,ph = vs.make_state_canonical(tmp_state)
+                set_matrix_element(row,col,data,new_state,i,VS,tz_fac[o12]*ph)
+
+    row = np.array(row)
+    col = np.array(col)
+    data = np.array(data)
+    
+    # check if hoppings occur within groups of (up,up), (dn,dn), and (up,dn) 
+    #assert(check_spin_group(row,col,data,VS)==True)
+    out = sps.coo_matrix((data,(row,col)),shape=(dim,dim))
+    
+    return out
+
+
+def create_edep_diag_matrix(VS,ANi,ACu,epCu,epNi):
     '''
     Create diagonal part of the site energies
     '''    
@@ -588,23 +704,59 @@ def create_edep_diag_matrix(VS,A,ep):
 
         orb1 = state['hole1_orb']
         orb2 = state['hole2_orb']
+        x1, y1, z1 = state['hole1_coord']
+        x2, y2, z2 = state['hole2_coord']                                                         #修改引入
+
 
         # d9L
-        if orb1 in pam.Ni_orbs and orb2 in pam.O_orbs:
-            diag_el += pam.ed[orb1] + ep
+        if orb1 in pam.Ni_orbs and orb2 in pam.O_orbs and z1==1 and z2==1:
+            diag_el += pam.edNi[orb1] + epNi
             idxs[i] = 1
-        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs: 
-            diag_el += pam.ed[orb2] + ep
+        elif orb1 in pam.Ni_orbs and orb2 in pam.O_orbs and z1==1 and z2==0:
+            diag_el += pam.edNi[orb1] + epCu
+            idxs[i] = 1   
+        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==1 and z1==1: 
+            diag_el += pam.edNi[orb2] + epNi
+            idxs[i] = 1
+        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==1 and z1==0: 
+            diag_el += pam.edNi[orb2] + epCu
+            idxs[i] = 1
+        elif orb1 in pam.Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==1: 
+            diag_el += pam.edCu[orb1] + epNi
+            idxs[i] = 1
+        elif orb1 in pam.Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==0: 
+            diag_el += pam.edCu[orb1] + epCu
+            idxs[i] = 1
+        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==0 and z1==1: 
+            diag_el += pam.edCu[orb2] + epNi
+            idxs[i] = 1
+        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==0 and z1==0: 
+            diag_el += pam.edCu[orb2] + epCu
             idxs[i] = 1
 
         # d8
-        elif orb1 in pam.Ni_orbs and orb2 in pam.Ni_orbs: 
-            diag_el += pam.ed[orb1] + pam.ed[orb2] 
+        elif orb1 in pam.Ni_orbs and orb2 in pam.Ni_orbs and z1==1 and z2==1: 
+            diag_el += pam.edNi[orb1] + pam.edNi[orb2] 
+            idxs[i] = 1
+        elif orb1 in pam.Ni_orbs and orb2 in pam.Cu_orbs and z1==1 and z2==0: 
+            diag_el += pam.edNi[orb1] + pam.edCu[orb2] 
+            idxs[i] = 1
+        elif orb1 in pam.Cu_orbs and orb2 in pam.Ni_orbs and z1==0 and z2==1: 
+            diag_el += pam.edCu[orb1] + pam.edNi[orb2] 
+            idxs[i] = 1
+        elif orb1 in pam.Cu_orbs and orb2 in pam.Cu_orbs and z1==0 and z2==0: 
+            diag_el += pam.edCu[orb1] + pam.edNi[orb2] 
             idxs[i] = 1
 
         # d10L2
-        elif orb1 in pam.O_orbs and orb2 in pam.O_orbs: 
-            diag_el += 2.*ep 
+        elif orb1 in pam.O_orbs and orb2 in pam.O_orbs and z1!=z2: 
+            diag_el += epCu+epNi
+            idxs[i] = 1
+        elif orb1 in pam.O_orbs and orb2 in pam.O_orbs and z1==z2==1: 
+            diag_el += 2*epNi
+            idxs[i] = 1
+        elif orb1 in pam.O_orbs and orb2 in pam.O_orbs and z1==z2==0: 
+            diag_el += 2*epCu
             idxs[i] = 1
 
         data.append(diag_el); row.append(i); col.append(i)
@@ -643,8 +795,10 @@ def get_double_occu_list(VS):
         x1, y1, z1 = state['hole1_coord']
         x2, y2, z2 = state['hole2_coord']
 
-        if (x1,y1) == (x2,y2):
+        if (x1,y1,z1) == (x2,y2,z2):
             if orb1 in pam.Ni_orbs and orb2 in pam.Ni_orbs:
+                d_list.append(i)
+            if orb1 in pam.Cu_orbs and orb2 in pam.Cu_orbs:
                 d_list.append(i)
                 #print "d_double: no_eh", i, s1,orb1,x1,y1,s2,orb2,x2,y2
             elif orb1 in pam.O_orbs and orb2 in pam.O_orbs:
@@ -656,7 +810,7 @@ def get_double_occu_list(VS):
     
     return d_list, p_list
 
-def create_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_sym, A, Upp):
+def create_Ni_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_sym, ANi ,Upp):
     '''
     Create Coulomb-exchange interaction matrix of d-multiplets including all symmetries
     
@@ -682,7 +836,8 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_
     channels = ['1A1','1A2','3A2','1B1','3B1','1E','3E','1B2','3B2']
 
     for sym in channels:
-        state_order, interaction_mat, Stot, Sz_set, AorB = get_interaction_mat(A, sym)
+        state_order, interaction_mat, Stot, Sz_set, AorB = get_interaction_mat(ANi, sym)
+#         state_order, interaction_mat, Stot, Sz_set, AorB = get_Cu_interaction_mat(ACu, sym)
         sym_orbs = state_order.keys()
         #print "orbitals in sym ", sym, "= ", sym_orbs
 
@@ -693,6 +848,9 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_
             is2 = state['hole2_spin']
             io1 = state['hole1_orb']
             io2 = state['hole2_orb']
+            ix1, iy1, iz1 = state['hole1_coord']
+            ix2, iy2, iz2 = state['hole2_coord']                                                        
+
         
             o12 = sorted([io1,io2])
             o12 = tuple(o12)
@@ -707,6 +865,9 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_
 
             if (io1==io2=='dxz' or io1==io2=='dyz') and AorB_sym[i]!=AorB:
                 continue
+                
+            if iz1!=1  and iz2!=1:                                #gai
+                continue    
 
             # get the corresponding index in sym for setting up matrix element
             idx1 = state_order[o12]
@@ -720,6 +881,8 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_
                 js2 = state['hole2_spin']
                 jo1 = state['hole1_orb']
                 jo2 = state['hole2_orb']
+                jx1, jy1, jz1 = state['hole1_coord']
+                jx2, jy2, jz2 = state['hole2_coord'] 
                
                 o34 = sorted([jo1,jo2])
                 o34 = tuple(o34)
@@ -728,6 +891,121 @@ def create_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_
 
                 if (jo1==jo2=='dxz' or jo1==jo2=='dyz') and AorB_sym[j]!=AorB:
                     continue
+
+                if jz1!=1  and jz2!=1:                                #gai
+                    continue                      
+                    
+                # only same total spin S and Sz state have nonzero matrix element
+                if o34 in sym_orbs and S34==S12 and Sz34==Sz12:
+                    idx2 = state_order[o34]
+
+                    #print o12[0],o12[1],S12,Sz12," ",o34[0],o34[1],S34,Sz34," ", interaction_mat[idx1][idx2]
+                    #print idx1, idx2
+
+                    val = interaction_mat[idx1][idx2]
+                    data.append(val); row.append(i); col.append(j)
+                    
+                    # make symmetric interaction matrix
+                    if j!=i:
+                        data.append(val); row.append(j); col.append(i)
+
+    # Create Upp matrix for p-orbital multiplets
+    for i in p_double:
+        data.append(Upp); row.append(i); col.append(i)
+
+    row = np.array(row)
+    col = np.array(col)
+    data = np.array(data)
+    
+    # check if hoppings occur within groups of (up,up), (dn,dn), and (up,dn) 
+    #assert(check_spin_group(row,col,data,VS)==True)
+    out = sps.coo_matrix((data,(row,col)),shape=(dim,dim))
+
+    return out
+
+def create_Cu_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, AorB_sym, ACu ,Upp):
+    '''
+    Create Coulomb-exchange interaction matrix of d-multiplets including all symmetries
+    
+    Loop over all d_double states, find the corresponding sym channel; 
+    the other loop over all d_double states, if it has same sym channel and S, Sz
+    enter into the matrix element
+    
+    There are some complications or constraints due to three holes and one Nd electron:
+    From H_matrix_reducing_VS file, to set up interaction between states i and j:
+    1. i and j belong to the same type, same order of orbitals to label the state (idxi==idxj below)
+    2. i and j's spins are same; or L and s should also have same spin
+    3. Positions of L and Nd-electron should also be the same
+    '''    
+    #print "start create_interaction_matrix"
+    
+    Norb = pam.Norb
+    dim = VS.dim
+    data = []
+    row = []
+    col = []
+    dd_state_indices = []
+    
+    channels = ['1A1','1A2','3A2','1B1','3B1','1E','3E','1B2','3B2']
+
+    for sym in channels:
+        state_order, interaction_mat, Stot, Sz_set, AorB = get_interaction_mat(ACu, sym)
+        sym_orbs = state_order.keys()
+        #print "orbitals in sym ", sym, "= ", sym_orbs
+
+        for i in d_double:
+            # state is original state but its orbital info remains after basis change
+            state = VS.get_state(VS.lookup_tbl[i])
+            is1 = state['hole1_spin']
+            is2 = state['hole2_spin']
+            io1 = state['hole1_orb']
+            io2 = state['hole2_orb']
+            ix1, iy1, iz1 = state['hole1_coord']
+            ix2, iy2, iz2 = state['hole2_coord']                                                        
+
+        
+            o12 = sorted([io1,io2])
+            o12 = tuple(o12)
+
+            # S_val, Sz_val obtained from basis.create_singlet_triplet_basis_change_matrix
+            S12  = S_val[i]
+            Sz12 = Sz_val[i]
+
+            # continue only if (o1,o2) is within desired sym
+            if o12 not in sym_orbs or S12!=Stot or Sz12 not in Sz_set:
+                continue
+
+            if (io1==io2=='dxz' or io1==io2=='dyz') and AorB_sym[i]!=AorB:
+                continue
+                
+            if iz1!=0  and iz2!=0:                                #gai
+                continue    
+
+            # get the corresponding index in sym for setting up matrix element
+            idx1 = state_order[o12]
+            
+            for j in d_double:
+                if j<i:
+                    continue
+
+                state = VS.get_state(VS.lookup_tbl[j])
+                js1 = state['hole1_spin']
+                js2 = state['hole2_spin']
+                jo1 = state['hole1_orb']
+                jo2 = state['hole2_orb']
+                jx1, jy1, jz1 = state['hole1_coord']
+                jx2, jy2, jz2 = state['hole2_coord'] 
+               
+                o34 = sorted([jo1,jo2])
+                o34 = tuple(o34)
+                S34  = S_val[j]
+                Sz34 = Sz_val[j]
+
+                if (jo1==jo2=='dxz' or jo1==jo2=='dyz') and AorB_sym[j]!=AorB:
+                    continue
+                    
+                if jz1!=0  and jz2!=0:                                #gai
+                    continue    
 
                 # only same total spin S and Sz state have nonzero matrix element
                 if o34 in sym_orbs and S34==S12 and Sz34==Sz12:

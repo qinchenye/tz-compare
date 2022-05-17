@@ -86,11 +86,12 @@ def get_d9L_state_indices(VS, S_val, Sz_val):
         x1, y1, z1 = state['hole1_coord']
         x2, y2, z2 = state['hole2_coord']
 
-        nNi, nO, dorbs, porbs = util.get_statistic_2orb(o1,o2)
+        nNi, nO, nCu, dorbs, porbs = util.get_statistic_2orb(o1,o2)
         
-        if not (nNi==1 and nO==1):
+        if not ((nNi==1 or nCu==1 ) and nO==1):                                                                     #gai
             continue
-        
+            
+
         # L not far away from Ni impurity
         orbs = [o1,o2]
         xs = [x1,x2]
