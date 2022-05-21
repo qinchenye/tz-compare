@@ -21,7 +21,7 @@ def get_ground_state(matrix, VS, S_val,Sz_val):
     '''        
     print ('start getting ground state')
 #     # in case eigsh does not work but matrix is actually small, e.g. Mc=1 (CuO4)
-#     M_dense = matrix.todense()
+    M_dense = matrix.todense()
 #     #print 'H='
 #     #print M_dense
     
@@ -33,17 +33,17 @@ def get_ground_state(matrix, VS, S_val,Sz_val):
 #                 print ii,jj,M_dense[ii,jj]
                     
                 
-#     vals, vecs = np.linalg.eigh(M_dense)
-#     vals.sort()
-#     print ('lowest eigenvalue of H from np.linalg.eigh = ')
-#     print (vals)
+    vals, vecs = np.linalg.eigh(M_dense)
+    vals.sort()
+    print ('lowest eigenvalue of H from np.linalg.eigh = ')
+    print (vals)
     
     # in case eigsh works:
-    Neval = pam.Neval
-    vals, vecs = sps.linalg.eigsh(matrix, k=Neval, which='SA')
-    vals.sort()
-    print ('lowest eigenvalue of H from np.linalg.eigsh = ')
-    print (vals)
+#     Neval = pam.Neval
+#     vals, vecs = sps.linalg.eigsh(matrix, k=Neval, which='SA')
+#     vals.sort()
+#     print ('lowest eigenvalue of H from np.linalg.eigsh = ')
+#     print (vals)
     
     # get state components in GS and another 9 higher states; note that indices is a tuple
     for k in range(0,1):
@@ -201,18 +201,18 @@ def get_ground_state(matrix, VS, S_val,Sz_val):
 #                  weight25+=abs(vecs[i,k])**2 
 
 
-#             if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==1 and Sz12==0:
-#                   weight1+=abs(vecs[i,k])**2    
-#             if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==0 and z2==0 and S12==1 and Sz12==0:
-#                   weight2+=abs(vecs[i,k])**2       
-#             if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==1 and z2==0 and S12==0 and Sz12==0:
-#                   weight3+=abs(vecs[i,k])**2       
-#             if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==1 and Sz12==0:
-#                   weight4+=abs(vecs[i,k])**2   
-#             if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==0 and z2==0 and S12==1 and Sz12==0:
-#                   weight5+=abs(vecs[i,k])**2                       
-#             if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==1 and z2==0 and S12==0 and Sz12==0:
-#                   weight6+=abs(vecs[i,k])**2                       
+            if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==1 and Sz12==0:
+                  weight1+=abs(vecs[i,k])**2    
+            if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==0 and z2==0 and S12==1 and Sz12==0:
+                  weight2+=abs(vecs[i,k])**2       
+            if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==1 and z2==0 and S12==0 and Sz12==0:
+                  weight3+=abs(vecs[i,k])**2       
+            if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==1 and Sz12==0:
+                  weight4+=abs(vecs[i,k])**2   
+            if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==0 and z2==0 and S12==1 and Sz12==0:
+                  weight5+=abs(vecs[i,k])**2                       
+            if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==1 and z2==0 and S12==0 and Sz12==0:
+                  weight6+=abs(vecs[i,k])**2                       
 #             if o12[0]=='d3z2r2' and o12[1]=='dxy' and z1==1 and z2==1 and S12==1 and Sz12==0:
 #                   weight7+=abs(vecs[i,k])**2   
 #             if o12[0]=='d3z2r2' and o12[1]=='dxy' and z1==0 and z2==0 and S12==1 and Sz12==0:
@@ -221,20 +221,20 @@ def get_ground_state(matrix, VS, S_val,Sz_val):
 #                   weight9+=abs(vecs[i,k])**2     
                     
                     
-            if (o12[0]=='px' and o12[1]=='px') or (o12[0]=='py' and o12[1]=='py') and z1==1 and z2==1 and S12==0 and Sz12==0:
-                  weight1+=abs(vecs[i,k])**2   
-            if o12[0]=='px' and o12[1]=='py' and z1==1 and z2==1 and S12==0 and Sz12==0:
-                  weight2+=abs(vecs[i,k])**2   
-            if o12[0]=='dx2y2' and (o12[1]=='px' or o12[1]=='py')  and z1==1 and z2==1 and S12==0 and Sz12==0:
-                  weight3+=abs(vecs[i,k])**2                     
-            if o12[0]=='d3z2r2' and (o12[1]=='px' or o12[1]=='py')  and z1==1 and z2==1 and S12==0 and Sz12==0:
-                  weight4+=abs(vecs[i,k])**2 
-            if o12[0]=='d3z2r2' and o12[1]=='d3z2r2' and z1==1 and z2==1 and S12==0 and Sz12==0:
-                  weight5+=abs(vecs[i,k])**2   
-            if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==1 and Sz12==0:
-                  weight6+=abs(vecs[i,k])**2                       
-            if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==0 and Sz12==0:
-                  weight7+=abs(vecs[i,k])**2                       
+#             if (o12[0]=='px' and o12[1]=='px') or (o12[0]=='py' and o12[1]=='py') and z1==1 and z2==1 and S12==0 and Sz12==0:
+#                   weight1+=abs(vecs[i,k])**2   
+#             if o12[0]=='px' and o12[1]=='py' and z1==1 and z2==1 and S12==0 and Sz12==0:
+#                   weight2+=abs(vecs[i,k])**2   
+#             if o12[0]=='dx2y2' and (o12[1]=='px' or o12[1]=='py')  and z1==1 and z2==1 and S12==0 and Sz12==0:
+#                   weight3+=abs(vecs[i,k])**2                     
+#             if o12[0]=='d3z2r2' and (o12[1]=='px' or o12[1]=='py')  and z1==1 and z2==1 and S12==0 and Sz12==0:
+#                   weight4+=abs(vecs[i,k])**2 
+#             if o12[0]=='d3z2r2' and o12[1]=='d3z2r2' and z1==1 and z2==1 and S12==0 and Sz12==0:
+#                   weight5+=abs(vecs[i,k])**2   
+#             if o12[0]=='d3z2r2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==1 and Sz12==0:
+#                   weight6+=abs(vecs[i,k])**2                       
+#             if o12[0]=='dx2y2' and o12[1]=='dx2y2' and z1==1 and z2==1 and S12==0 and Sz12==0:
+#                   weight7+=abs(vecs[i,k])**2                       
                     
             sumweight=sumweight+abs(vecs[i,k])**2
         print ('sumweight=',sumweight)
@@ -367,28 +367,28 @@ def get_ground_state(matrix, VS, S_val,Sz_val):
 #         txt.write(str(weight23)+'\n')
 #         txt.close()
 
-#         txt=open('eigenvalue5','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('eigenvalue10','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(vals[k])+'\n')
 #         txt.close()
 
 
 
-#         txt=open('dx2y2dx2y2z06','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('dx2y2dx2y2z010','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(weight2)+'\n')
 #         txt.close()
-#         txt=open('dx2y2dx2y2z16','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('dx2y2dx2y2z110','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(weight1)+'\n')
 #         txt.close()
-#         txt=open('dx2y2dx2y2z1z06','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('dx2y2dx2y2z1z010','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(weight3)+'\n')
 #         txt.close()
-#         txt=open('d3z2r2dx2y2z06','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('d3z2r2dx2y2z010','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(weight5)+'\n')
 #         txt.close()
-#         txt=open('d3z2r2dx2y2z16','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('d3z2r2dx2y2z110','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(weight4)+'\n')
 #         txt.close()
-#         txt=open('d3z2r2dx2y2z1z06','a')                                  #tz=0.1-2,步长0.1
+#         txt=open('d3z2r2dx2y2z1z010','a')                                  #tz=0.1-2,步长0.1
 #         txt.write(str(weight6)+'\n')
 #         txt.close()
 #         txt=open('d3z2r2dxyz06','a')                                  #tz=0.1-2,步长0.1
@@ -402,27 +402,31 @@ def get_ground_state(matrix, VS, S_val,Sz_val):
 #         txt.close()
 
 
-        txt=open('pxpx5','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight1)+'\n')
-        txt.close()
-        txt=open('pxpy5','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight2)+'\n')
-        txt.close()
-        txt=open('dx2y2px5','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight3)+'\n')
-        txt.close()
-        txt=open('d3z2r2py5','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight4)+'\n')
-        txt.close()
-        txt=open('d3z2r2d3z2r25','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight5)+'\n')
-        txt.close()
-        txt=open('d3z2r2dx2y25','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight6)+'\n')
-        txt.close()
-        txt=open('dx2y2dx2y25','a')                                  #tz=0.1-2,步长0.1
-        txt.write(str(weight7)+'\n')
-        txt.close()
+#         txt=open('pxpx5','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight1)+'\n')
+#         txt.close()
+#         txt=open('pxpy5','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight2)+'\n')
+#         txt.close()
+#         txt=open('dx2y2px5','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight3)+'\n')
+#         txt.close()
+#         txt=open('d3z2r2py5','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight4)+'\n')
+#         txt.close()
+#         txt=open('d3z2r2d3z2r25','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight5)+'\n')
+#         txt.close()
+#         txt=open('d3z2r2dx2y25','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight6)+'\n')
+#         txt.close()
+#         txt=open('dx2y2dx2y25','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight7)+'\n')
+#         txt.close()
+#         weight8=weight1+weight2
+#         txt=open('d10L2','a')                                  #tz=0.1-2,步长0.1
+#         txt.write(str(weight8)+'\n')
+#         txt.close()
 
 
 

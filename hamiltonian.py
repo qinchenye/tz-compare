@@ -454,9 +454,9 @@ def create_tpd_nn_matrix(VS, tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac):
                 if not vs.check_in_vs_condition(x1+vx,y1+vy,x2,y2):
                     continue
                     
-                if z1!=z2:                                                                                   #xin
-                    continue 
-
+#                 if z1!=z2:
+#                     continue      
+                    
                 # consider t_pd for all cases; when up hole hops, dn hole should not change orb
                 for o1 in orbs1:
                     if o1 not in tpd_orbs:
@@ -483,9 +483,9 @@ def create_tpd_nn_matrix(VS, tpd_nn_hop_dir, tpd_orbs, tpd_nn_hop_fac):
 
                 if not vs.check_in_vs_condition(x1,y1,x2+vx,y2+vy):
                     continue
-                     
-                if z1!=z2:                                                                                   #xin
-                    continue
+                    
+#                 if z1!=z2:
+#                     continue    
 
                 for o2 in orbs2:
                     if o2 not in tpd_orbs:
@@ -546,6 +546,9 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
 
                 if not vs.check_in_vs_condition(x1+vx,y1+vy,x2,y2):
                     continue
+                    
+                if z1!=z2:
+                    continue  
 
                 # consider t_pp for all cases; when one hole hops, the other hole should not change orb
                 for o1 in orbs1:
@@ -563,7 +566,7 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
                     orb2n = new_state['hole2_orb']
                     x1n, y1n, z1n = new_state['hole1_coord']
                     x2n, y2n, z2n = new_state['hole2_coord']
-                    #print x1,y1,orb1,s1,x2,y2,orb2,s2,'tpp hops to',x1n, y1n,orb1n,s1n,x2n, y2n,orb2n,s2n
+#                     print (x1,y1,orb1,s1,x2,y2,orb2,s2,'tpp hops to',x1n, y1n,orb1n,s1n,x2n, y2n,orb2n,s2n)
 
                     o12 = sorted([orb1, dir_, o1])
                     o12 = tuple(o12)
@@ -581,6 +584,9 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
 
                 if not vs.check_in_vs_condition(x1,y1,x2+vx,y2+vy): 
                     continue
+                    
+                if z1!=z2:
+                    continue  
 
                 for o2 in orbs2:
                     # consider Pauli principle
@@ -595,6 +601,7 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
                     o12 = tuple(o12)
                     if o12 in tpp_orbs:
                         set_matrix_element(row,col,data,new_state,i,VS,tpp_nn_hop_fac[o12]*ph)
+#                         print (new_state,i)
 
     row = np.array(row)
     col = np.array(col)
@@ -653,6 +660,7 @@ def create_tz_matrix(VS,tz_fac):
                 tmp_state = vs.create_state(s1,o1,x1,y1,1-z1,s2,orb2,x2,y2,z2)
                 new_state,ph = vs.make_state_canonical(tmp_state)
                 set_matrix_element(row,col,data,new_state,i,VS,tz_fac[o12]*ph)
+#                 print ()
 
         # hole 2 hops; some d-orbitals might have no tpd
         orbs2 = lat.get_unit_cell_rep(x2, y2, 1-z2)
@@ -715,10 +723,10 @@ def create_edep_diag_matrix(VS,ANi,ACu,epCu,epNi):
         elif orb1 in pam.Ni_orbs and orb2 in pam.O_orbs and z1==1 and z2==0:
             diag_el += pam.edNi[orb1] + epCu
             idxs[i] = 1   
-        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==1 and z1==1: 
+        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==1 and z2==1: 
             diag_el += pam.edNi[orb2] + epNi
             idxs[i] = 1
-        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==1 and z1==0: 
+        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==0 and z2==1: 
             diag_el += pam.edNi[orb2] + epCu
             idxs[i] = 1
         elif orb1 in pam.Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==1: 
@@ -727,10 +735,10 @@ def create_edep_diag_matrix(VS,ANi,ACu,epCu,epNi):
         elif orb1 in pam.Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==0: 
             diag_el += pam.edCu[orb1] + epCu
             idxs[i] = 1
-        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==0 and z1==1: 
+        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==1 and z2==0: 
             diag_el += pam.edCu[orb2] + epNi
             idxs[i] = 1
-        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==0 and z1==0: 
+        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==0 and z2==0: 
             diag_el += pam.edCu[orb2] + epCu
             idxs[i] = 1
 
@@ -745,7 +753,7 @@ def create_edep_diag_matrix(VS,ANi,ACu,epCu,epNi):
             diag_el += pam.edCu[orb1] + pam.edNi[orb2] 
             idxs[i] = 1
         elif orb1 in pam.Cu_orbs and orb2 in pam.Cu_orbs and z1==0 and z2==0: 
-            diag_el += pam.edCu[orb1] + pam.edNi[orb2] 
+            diag_el += pam.edCu[orb1] + pam.edCu[orb2] 
             idxs[i] = 1
 
         # d10L2
@@ -760,17 +768,17 @@ def create_edep_diag_matrix(VS,ANi,ACu,epCu,epNi):
             idxs[i] = 1
 
         data.append(diag_el); row.append(i); col.append(i)
-        #print i, diag_el
+#         print (i, diag_el)
 
     row = np.array(row)
     col = np.array(col)
     data = np.array(data)
-    #print min(data)
-    #print len(row), len(col)
+#     print (min(data))
+#     print (len(row), len(col))
     
-   # for ii in range(0,len(row)):
-   #     if data[ii]==0:
-   #         print ii
+#     for ii in range(0,len(row)):
+#         if data[ii]==0:
+#             print (ii)
     
     # check if hoppings occur within groups of (up,up), (dn,dn), and (up,dn) 
     #assert(check_spin_group(row,col,data,VS)==True)
@@ -797,8 +805,6 @@ def get_double_occu_list(VS):
 
         if (x1,y1,z1) == (x2,y2,z2):
             if orb1 in pam.Ni_orbs and orb2 in pam.Ni_orbs:
-                d_list.append(i)
-            if orb1 in pam.Cu_orbs and orb2 in pam.Cu_orbs:
                 d_list.append(i)
                 #print "d_double: no_eh", i, s1,orb1,x1,y1,s2,orb2,x2,y2
             elif orb1 in pam.O_orbs and orb2 in pam.O_orbs:
@@ -899,8 +905,8 @@ def create_Ni_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, Ao
                 if o34 in sym_orbs and S34==S12 and Sz34==Sz12:
                     idx2 = state_order[o34]
 
-                    #print o12[0],o12[1],S12,Sz12," ",o34[0],o34[1],S34,Sz34," ", interaction_mat[idx1][idx2]
-                    #print idx1, idx2
+#                     print (o12[0],o12[1],S12,Sz12," ",o34[0],o34[1],S34,Sz34," ", interaction_mat[idx1][idx2])
+#                     print (idx1, idx2)
 
                     val = interaction_mat[idx1][idx2]
                     data.append(val); row.append(i); col.append(j)
@@ -1011,8 +1017,8 @@ def create_Cu_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, Ao
                 if o34 in sym_orbs and S34==S12 and Sz34==Sz12:
                     idx2 = state_order[o34]
 
-                    #print o12[0],o12[1],S12,Sz12," ",o34[0],o34[1],S34,Sz34," ", interaction_mat[idx1][idx2]
-                    #print idx1, idx2
+#                     print (o12[0],o12[1],S12,Sz12," ",o34[0],o34[1],S34,Sz34," ", interaction_mat[idx1][idx2])
+#                     print (idx1, idx2)
 
                     val = interaction_mat[idx1][idx2]
                     data.append(val); row.append(i); col.append(j)

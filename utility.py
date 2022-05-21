@@ -67,25 +67,21 @@ def get_statistic_2orb(o1,o2):
     Get how many orbs are on Ni, O separately
     and write info into dorbs and porbs
     '''  
-    nNi = 0; nO = 0;nCu = 0; dorbs=[]; porbs=[]
+    nNi_Cu = 0; nO = 0; dorbs=[]; porbs=[]
     if o1 in pam.Ni_orbs:
-        nNi += 1; dorbs.append(o1)
-    elif o1 in pam.Cu_orbs:
-        nCu += 1; dorbs.append(o1)    
+        nNi_Cu += 1; dorbs.append(o1)   
     elif o1 in pam.O_orbs:
         nO += 1; porbs.append(o1)
     if o2 in pam.Ni_orbs:
-        nNi += 1; dorbs.append(o2)
-    elif o2 in pam.Cu_orbs:
-        nCu += 1; dorbs.append(o2)  
+        nNi_Cu += 1; dorbs.append(o2)
     elif o2 in pam.O_orbs:
         nO += 1; porbs.append(o2)
         
 
     assert(nO ==len(porbs))
-    assert((nNi+nCu) ==len(dorbs))
+    assert(nNi_Cu ==len(dorbs))
     
-    return nNi, nO, nCu, dorbs, porbs
+    return nNi_Cu, nCu, dorbs, porbs
 
 def get_statistic_3orb(o1,o2,o3):
     '''

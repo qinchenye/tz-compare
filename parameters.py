@@ -2,7 +2,7 @@ import math
 import numpy as np
 M_PI = math.pi
 
-Mc = 8
+Mc = 2
 
 # Note that Ni-d and O-p orbitals use hole language
 # while Nd orbs use electron language
@@ -16,24 +16,24 @@ Mc = 8
 #       'dxy'   : 0.3,\
 #       'dxz'   : 0.7,\
 #       'dyz'   : 0.7}
-edCu = {'d3z2r2': 200.0,\
-      'dx2y2' : 200.0,\
-      'dxy'   : 200.0,\
-      'dxz'   : 200.0,\
-      'dyz'   : 200.0}
+edCu = {'d3z2r2': 0.0,\
+      'dx2y2' : 0.0,\
+      'dxy'   : 0.0,\
+      'dxz'   : 0.0,\
+      'dyz'   : 0.0}
 edNi = {'d3z2r2': 0.0,\
       'dx2y2' : 0.0,\
       'dxy'   : 0.0,\
       'dxz'   : 0.0,\
       'dyz'   : 0.0}
 
-epCus = np.arange(400.0, 400.01, 1.0)
-epNis = np.arange(0.0, 12.01, 1.0)
+epCus = np.arange(3.0,3.01, 1.0)
+epNis = np.arange(7.0,7.31, 1.0)
 
-ANis = np.arange(0.0, 0.01, 1.0)
-ACus = np.arange(400.0, 400.01, 1.0)
-B = 0.00
-C = 0.00
+ANis = np.arange(4.0,4.01, 1.0)
+ACus = np.arange(6.0, 6.01, 1.0)
+B = 0.15
+C = 0.58
 #As = np.arange(100, 100.1, 1.0)
 #As = np.arange(0.0, 0.01, 1.0)
 #B = 0
@@ -45,7 +45,7 @@ C = 0.00
 
 # IMPORTANT: keep all hoppings below positive to avoid confusion
 #            hopping signs are considered in dispersion separately
-Norb = 7
+Norb = 9
 if Norb==7:
 #     tpds = [0.00001]  # for check_CuO4_eigenvalues.py
     tpds = np.linspace(1.5, 1.5, num=1, endpoint=True) #[0.25]
@@ -57,10 +57,10 @@ elif Norb==9 or Norb==11:
     # here use Eskes's thesis Page 4
     # also note that tpd ~ pds*sqrt(3)/2
     vals = np.linspace(1.3, 1.3, num=1, endpoint=True)
-    pdss = np.asarray(vals)*2./np.sqrt(3)
-    pdps = np.asarray(pdss)*np.sqrt(3)/4.
-#     pdss = [0.001]
-#     pdps = [0.001]
+#     pdss = np.asarray(vals)*2./np.sqrt(3)
+#     pdps = np.asarray(pdss)*np.sqrt(3)/4.
+    pdss = [0.001]
+    pdps = [0.001]
     #------------------------------------------------------------------------------
     # note that tpp ~ (pps+ppp)/2
     # because 3 or 7 orbital bandwidth is 8*tpp while 9 orbital has 4*(pps+ppp)
@@ -70,7 +70,7 @@ elif Norb==9 or Norb==11:
     #pps = 0.00001
     #ppp = 0.00001
 
-tzs =np.arange(0, 0.1, 0.2)       #gai
+tzs =np.arange(0, 4, 0.2)       #gai
                                                
 wmin = -8; wmax = 20
 eta = 0.1
