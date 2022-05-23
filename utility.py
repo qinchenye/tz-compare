@@ -12,7 +12,7 @@ import parameters as pam
 import hamiltonian as ham
 import lattice as lat
 import variational_space as vs 
-import utility as util
+# import utility as util
 
 #####################################
 def write_Aw(fname,Aw,w_vals):
@@ -68,20 +68,19 @@ def get_statistic_2orb(o1,o2):
     and write info into dorbs and porbs
     '''  
     nNi_Cu = 0; nO = 0; dorbs=[]; porbs=[]
-    if o1 in pam.Ni_orbs:
+    if o1 in pam.Ni_Cu_orbs:
         nNi_Cu += 1; dorbs.append(o1)   
     elif o1 in pam.O_orbs:
         nO += 1; porbs.append(o1)
-    if o2 in pam.Ni_orbs:
+    if o2 in pam.Ni_Cu_orbs:
         nNi_Cu += 1; dorbs.append(o2)
     elif o2 in pam.O_orbs:
-        nO += 1; porbs.append(o2)
-        
+        nO += 1; porbs.append(o2)     
 
     assert(nO ==len(porbs))
     assert(nNi_Cu ==len(dorbs))
     
-    return nNi_Cu, nCu, dorbs, porbs
+    return nNi_Cu, nO, dorbs, porbs
 
 def get_statistic_3orb(o1,o2,o3):
     '''

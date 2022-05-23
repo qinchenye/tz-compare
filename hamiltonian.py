@@ -6,7 +6,7 @@ constants t_pd, t_pp, etc..
 import parameters as pam
 import lattice as lat
 import variational_space as vs 
-import utility as util
+# import utility as util
 import numpy as np
 import scipy.sparse as sps
 
@@ -547,8 +547,9 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
                 if not vs.check_in_vs_condition(x1+vx,y1+vy,x2,y2):
                     continue
                     
-                if z1!=z2:
-                    continue  
+#                 if z1!=z2:
+#                     continue  
+
 
                 # consider t_pp for all cases; when one hole hops, the other hole should not change orb
                 for o1 in orbs1:
@@ -566,7 +567,7 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
                     orb2n = new_state['hole2_orb']
                     x1n, y1n, z1n = new_state['hole1_coord']
                     x2n, y2n, z2n = new_state['hole2_coord']
-#                     print (x1,y1,orb1,s1,x2,y2,orb2,s2,'tpp hops to',x1n, y1n,orb1n,s1n,x2n, y2n,orb2n,s2n)
+#                     print (x1,y1,z1,orb1,s1,x2,y2,z2,orb2,s2,'tpp hops to',x1n, y1n,z1n,orb1n,s1n,x2n, y2n,z2n,orb2n,s2n)
 
                     o12 = sorted([orb1, dir_, o1])
                     o12 = tuple(o12)
@@ -585,8 +586,8 @@ def create_tpp_nn_matrix(VS,tpp_nn_hop_fac):
                 if not vs.check_in_vs_condition(x1,y1,x2+vx,y2+vy): 
                     continue
                     
-                if z1!=z2:
-                    continue  
+#                 if z1!=z2:
+#                     continue  
 
                 for o2 in orbs2:
                     # consider Pauli principle
@@ -717,42 +718,42 @@ def create_edep_diag_matrix(VS,ANi,ACu,epCu,epNi):
 
 
         # d9L
-        if orb1 in pam.Ni_orbs and orb2 in pam.O_orbs and z1==1 and z2==1:
+        if orb1 in pam.Ni_Cu_orbs and orb2 in pam.O_orbs and z1==1 and z2==1:
             diag_el += pam.edNi[orb1] + epNi
             idxs[i] = 1
-        elif orb1 in pam.Ni_orbs and orb2 in pam.O_orbs and z1==1 and z2==0:
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.O_orbs and z1==1 and z2==0:
             diag_el += pam.edNi[orb1] + epCu
             idxs[i] = 1   
-        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==1 and z2==1: 
+        elif orb2 in pam.Ni_Cu_orbs and orb1 in pam.O_orbs and z1==1 and z2==1: 
             diag_el += pam.edNi[orb2] + epNi
             idxs[i] = 1
-        elif orb2 in pam.Ni_orbs and orb1 in pam.O_orbs and z1==0 and z2==1: 
+        elif orb2 in pam.Ni_Cu_orbs and orb1 in pam.O_orbs and z1==0 and z2==1: 
             diag_el += pam.edNi[orb2] + epCu
             idxs[i] = 1
-        elif orb1 in pam.Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==1: 
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==1: 
             diag_el += pam.edCu[orb1] + epNi
             idxs[i] = 1
-        elif orb1 in pam.Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==0: 
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.O_orbs and z1==0 and z2==0: 
             diag_el += pam.edCu[orb1] + epCu
             idxs[i] = 1
-        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==1 and z2==0: 
+        elif orb2 in pam.Ni_Cu_orbs and orb1 in pam.O_orbs and z1==1 and z2==0: 
             diag_el += pam.edCu[orb2] + epNi
             idxs[i] = 1
-        elif orb2 in pam.Cu_orbs and orb1 in pam.O_orbs and z1==0 and z2==0: 
+        elif orb2 in pam.Ni_Cu_orbs and orb1 in pam.O_orbs and z1==0 and z2==0: 
             diag_el += pam.edCu[orb2] + epCu
             idxs[i] = 1
 
         # d8
-        elif orb1 in pam.Ni_orbs and orb2 in pam.Ni_orbs and z1==1 and z2==1: 
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and z1==1 and z2==1: 
             diag_el += pam.edNi[orb1] + pam.edNi[orb2] 
             idxs[i] = 1
-        elif orb1 in pam.Ni_orbs and orb2 in pam.Cu_orbs and z1==1 and z2==0: 
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and z1==1 and z2==0: 
             diag_el += pam.edNi[orb1] + pam.edCu[orb2] 
             idxs[i] = 1
-        elif orb1 in pam.Cu_orbs and orb2 in pam.Ni_orbs and z1==0 and z2==1: 
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and z1==0 and z2==1: 
             diag_el += pam.edCu[orb1] + pam.edNi[orb2] 
             idxs[i] = 1
-        elif orb1 in pam.Cu_orbs and orb2 in pam.Cu_orbs and z1==0 and z2==0: 
+        elif orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs and z1==0 and z2==0: 
             diag_el += pam.edCu[orb1] + pam.edCu[orb2] 
             idxs[i] = 1
 
@@ -804,7 +805,7 @@ def get_double_occu_list(VS):
         x2, y2, z2 = state['hole2_coord']
 
         if (x1,y1,z1) == (x2,y2,z2):
-            if orb1 in pam.Ni_orbs and orb2 in pam.Ni_orbs:
+            if orb1 in pam.Ni_Cu_orbs and orb2 in pam.Ni_Cu_orbs:
                 d_list.append(i)
                 #print "d_double: no_eh", i, s1,orb1,x1,y1,s2,orb2,x2,y2
             elif orb1 in pam.O_orbs and orb2 in pam.O_orbs:
@@ -830,7 +831,7 @@ def create_Ni_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, Ao
     2. i and j's spins are same; or L and s should also have same spin
     3. Positions of L and Nd-electron should also be the same
     '''    
-    #print "start create_interaction_matrix"
+    print ("start create_interaction_matrix")
     
     Norb = pam.Norb
     dim = VS.dim
@@ -943,7 +944,7 @@ def create_Cu_interaction_matrix_ALL_syms(VS,d_double,p_double,S_val, Sz_val, Ao
     2. i and j's spins are same; or L and s should also have same spin
     3. Positions of L and Nd-electron should also be the same
     '''    
-    #print "start create_interaction_matrix"
+    print ("start create_interaction_matrix")
     
     Norb = pam.Norb
     dim = VS.dim

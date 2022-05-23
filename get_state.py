@@ -45,6 +45,7 @@ def get_d8_state_indices_sym(VS, sym, d_double, S_val, Sz_val, AorB_sym, A):
         S12  = S_val[i]
         Sz12 = Sz_val[i]
         
+        
         # continue only if (o1,o2) is within desired sym
         if o12 not in sym_orbs or S12!=Stot or Sz12 not in Sz_set:
             continue
@@ -88,7 +89,7 @@ def get_d9L_state_indices(VS, S_val, Sz_val):
 
         nNi_Cu, nO, dorbs, porbs = util.get_statistic_2orb(o1,o2)
         
-        if not ((nNi_Cu==1 or nCu==1 ) and nO==1):                                                                     #gai
+        if not (nNi_Cu==1 and nO==1):                                                                     #gai
             continue
             
 
