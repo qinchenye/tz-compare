@@ -105,6 +105,8 @@ def create_singlet_triplet_basis_change_matrix(VS,d_double):
         s2 = start_state['hole2_spin']
         orb1 = start_state['hole1_orb']
         orb2 = start_state['hole2_orb']
+        x1, y1, z1 =  start_state['hole1_coord']
+        x2, y2, z2 =  start_state['hole2_coord']  
 
         if i not in count_list:
             j, ph = find_singlet_triplet_partner(start_state,VS)
@@ -138,9 +140,14 @@ def create_singlet_triplet_basis_change_matrix(VS,d_double):
                         # find e2e2 state:
                         for e2 in d_double:
                             state = VS.get_state(VS.lookup_tbl[e2])
-                            orb1 = state['hole1_orb']
-                            orb2 = state['hole2_orb']
-                            if orb1==orb2=='dyz':
+                            jorb1 = state['hole1_orb']
+                            jorb2 = state['hole2_orb']
+                            jx1, jy1, jz1 = state['hole1_coord']
+                            jx2, jy2, jz2 = state['hole2_coord']  
+
+                            if jz1!=z1 or jz2!=z2:
+                                continue
+                            if jorb1==jorb2=='dyz':
                                 data.append(1.0);  row.append(i);  col.append(i)
                                 data.append(1.0);  row.append(e2); col.append(i)
                                 AorB_sym[i]  = 1
@@ -231,6 +238,8 @@ def create_singlet_triplet_basis_change_matrix_d_double(VS,d_double):
         s2 = start_state['hole2_spin']
         orb1 = start_state['hole1_orb']
         orb2 = start_state['hole2_orb']
+        x1, y1, z1 =  start_state['hole1_coord']
+        x2, y2, z2 =  start_state['hole2_coord']  
 
         if s1==s2:
             # must be triplet
@@ -261,9 +270,15 @@ def create_singlet_triplet_basis_change_matrix_d_double(VS,d_double):
                     # find e2e2 state:
                     for e2 in d_double:
                         state = VS.get_state(VS.lookup_tbl[e2])
-                        orb1 = state['hole1_orb']
-                        orb2 = state['hole2_orb']
-                        if orb1==orb2=='dyz':
+                        jorb1 = state['hole1_orb']
+                        jorb2 = state['hole2_orb']
+                        jx1, jy1, jz1 = state['hole1_coord']
+                        jx2, jy2, jz2 = state['hole2_coord']  
+                        
+                        if jz1!=z1 or jz2!=z2:
+                            continue
+                            
+                        if jorb1==jorb2=='dyz':
                             data.append(1.0);  row.append(i);  col.append(i)
                             data.append(1.0);  row.append(e2); col.append(i)
                             AorB_sym[i] = 1
